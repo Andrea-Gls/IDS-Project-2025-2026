@@ -2,7 +2,7 @@ package com.gasing.hackhub.service;
 
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class EvaluationService {
     
 }
