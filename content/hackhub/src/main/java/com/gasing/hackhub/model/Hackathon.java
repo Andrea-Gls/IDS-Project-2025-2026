@@ -1,9 +1,11 @@
 package com.gasing.hackhub.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gasing.hackhub.enums.HackathonStatus;
@@ -39,9 +41,15 @@ public class Hackathon {
     @Column(nullable = false)
     private HackathonStatus stato;
 
+    // Cascade ALL: Se cancello l'evento, cancello anche l'assegnazione dei giudici.
     @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StaffAssignment> staff;
+    @ToString.Exclude // Protegge i log dal loop infinito
+    @JsonIgnore       // Protegge il JSON
+    private List<StaffAssignment> staff = new ArrayList<>();
 
+    // Cascade ALL: Se cancello l'evento, cancello tutte le iscrizioni.
     @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HackathonRegistration> registrations;
+    @ToString.Exclude // Protegge i log dal loop infinito
+    @JsonIgnore       // Protegge il JSON
+    private List<HackathonRegistration> registrations = new ArrayList<>();
 }
