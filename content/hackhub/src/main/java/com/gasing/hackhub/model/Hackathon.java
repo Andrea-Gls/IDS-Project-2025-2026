@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,19 +24,27 @@ public class Hackathon {
     private Long id;
 
     @Column(nullable = false)
-    private String titolo;
+    private String nome;
 
-    @Column(nullable = false, length = 1000)
-    private String descrizione;
-
-    @Column(nullable = false)
-    private LocalDate dataInizio;
+    @Column(nullable = false, length = 5000)
+    private String regolamento;
 
     @Column(nullable = false)
-    private LocalDate dataFine;
+    private String luogo;
+
+    private Double premio;
 
     @Column(nullable = false)
-    private LocalDate scadenzaIscrizione;
+    private int dimensioneMassimaTeam;
+
+    @Column(nullable = false)
+    private LocalDateTime dataInizio;
+
+    @Column(nullable = false)
+    private LocalDateTime dataFine;
+
+    @Column(nullable = false)
+    private LocalDateTime scadenzaIscrizione;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
