@@ -54,9 +54,14 @@ public class TeamService {
         // salvo il team così il db gli da un id
         newTeam = teamRepository.save(newTeam);
 
+        // Aggiungo manualmente l'utente alla lista del team in memoria
+        // così quando restituisco l'oggetto 'newTeam' al frontend, la lista non è vuota.
+        newTeam.getMembers().add(creator);
+
         // e infine dico all'utente che questo è il suo nuovo team e salvo l'utente
         creator.setTeam(newTeam);
         userRepository.save(creator);
+
 
         return newTeam;
     }

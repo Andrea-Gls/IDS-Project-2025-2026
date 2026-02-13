@@ -16,3 +16,54 @@ Content-Type: application/json
   "email": "mario@prova.it",
   "password": "12"
 }
+
+### TEST PER I TEAM; REGISTRIAMO 2 utenti e proviamo a usare inviti e accetta
+
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario@prova.it",
+  "password": "123"
+}
+
+### 2. Registra LUIGI (L'Amico)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Luigi",
+  "cognome": "Verdi",
+  "email": "luigi@prova.it",
+  "password": "123"
+}
+
+### 3. MARIO crea il Team Rocket
+POST http://localhost:8080/api/teams/create
+Content-Type: application/json
+
+{
+  "nomeTeam": "Team Rocket",
+  "creatorUserId": 1
+}
+
+### 4. MARIO invita Luigi (usando la mail)
+POST http://localhost:8080/api/teams/invite
+Content-Type: application/json
+
+{
+  "teamId": 1,
+  "emailUtente": "luigi@prova.it"
+}
+
+### 5. LUIGI accetta l'invito
+POST http://localhost:8080/api/teams/respond-invite
+Content-Type: application/json
+
+{
+  "teamId": 1,
+  "userId": 2,
+  "accetta": true
+}
