@@ -30,6 +30,32 @@ public class HackathonController {
             // Se c'è un errore (es. nome duplicato, mentori mancanti), restituisco 400
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+
+    }
+    @GetMapping
+    public ResponseEntity<?> getAllHackathons() {
+        return ResponseEntity.ok(hackathonService.getAllHackathons());
+    }
+
+    @PostMapping("/{id}/add-mentor")
+    public ResponseEntity<?> addMentorToHackathon(
+            @PathVariable Long id,
+            @RequestBody com.gasing.hackhub.dto.staff.AddStaffRequest request) {
+        try {
+            hackathonService.addMentor(id, request);
+            return ResponseEntity.ok("Nuovo Mentore aggiunto con successo!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getHackathonDetail(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(hackathonService.getHackathonById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

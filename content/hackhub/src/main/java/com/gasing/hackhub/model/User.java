@@ -46,15 +46,10 @@ public class User implements UserDetails { // <--- 1. AGGIUNTO implements UserDe
     @JsonIgnore // non serve se usiamo i DTO, però lo lascio per sicurezza nei test
     private Team team;
 
-    // =======================================================================
-    // 2. METODI DI SPRING SECURITY (Non intaccano il Database o il JSON)
-    // =======================================================================
-
     @Override
     @JsonIgnore // Ignorato dal JSON, serve solo al "Dietro le quinte" di Security
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Nessun ruolo globale per ora. I permessi specifici (es. MENTOR) 
-        // li gestirai tramite la lista 'assignments'.
+        // Nessun ruolo globale per ora
         return List.of(); 
     }
 

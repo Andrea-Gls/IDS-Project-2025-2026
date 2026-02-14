@@ -90,6 +90,30 @@ public class HackathonService {
         return hackathon;
     }
 
+    // AGGIUNGERE MENTORE
+    @Transactional
+    public void addMentor(Long hackathonId, com.gasing.hackhub.dto.staff.AddStaffRequest request) {
+
+        // Recupero l'Hackathon
+        Hackathon hackathon = hackathonRepository.findById(hackathonId)
+                .orElseThrow(() -> new RuntimeException("Hackathon non trovato"));
+
+        // Controllo i permessi: CHI sta facendo la richiesta?
+        StaffAssignment organizerAssignment = staffAssignmentRepository.findByHackathonIdAndUserId(hackathonId, request.getOrganizerId())
+                .orElseThrow(() -> new RuntimeException("Non fai parte dello staff o non sei l'organizzatore!"));
+
+        if (organizerAssignment.getRole() != Role.ORGANIZER) {
+            throw new RuntimeException("Solo l'Organizzatore può aggiungere nuovi membri allo staff!");
+        }
+
+        // Recupero il futuro Mentore
+        User newMentor = userRepository.findByEmail(request.getEmailUtente())
+                .orElseThrow(() -> new RuntimeException("Utente da aggiungere non trovato con email: " + request.getEmailUtente()));
+
+        // Assegno il ruolo (Uso il metodo privato che abbiamo già!)
+        assignRole(newMentor, hackathon, Role.MENTOR);
+    }
+
     // CAMBIARE LO STATO DELL?HACKATHON
 
     @Transactional
@@ -179,6 +203,17 @@ public class HackathonService {
         registration.setWinner(false);
 
         registrationRepository.save(registration);
+    }
+
+    // Lista di tutti gli Hackathon (Per Utenti e Visitatori)
+    public java.util.List<Hackathon> getAllHackathons() {
+        return hackathonRepository.findAll();
+    }
+
+    // Dettaglio singolo Hackathon
+    public Hackathon getHackathonById(Long id) {
+        return hackathonRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hackathon con ID " + id + " non trovato!"));
     }
 
     // Metodo privato per il vincitore
