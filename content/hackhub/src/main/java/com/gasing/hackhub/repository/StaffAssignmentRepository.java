@@ -1,6 +1,7 @@
 package com.gasing.hackhub.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,6 @@ public interface StaffAssignmentRepository extends JpaRepository<StaffAssignment
 
     // Controlla se un utente è già assegnato come staff in un hackathon specifico
     boolean existsByHackathonIdAndUserId(Long hackathonId, Long userId);
+
+    Optional<StaffAssignment> findByHackathonIdAndUserId(Long hackathonId, Long userId);
 }

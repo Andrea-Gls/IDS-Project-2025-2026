@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -22,9 +23,11 @@ public class TeamInvitation {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User receiver; // L'utente invitato
 
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
+    @ToString.Exclude
     private Team team; // Il team che invita
 }
