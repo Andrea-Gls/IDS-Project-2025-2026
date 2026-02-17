@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/teams")
 public class TeamController {
 
-    // collego il service che è quello che fa il lavoro sporco
+    // collego il service
     @Autowired
     private TeamService teamService;
 
-    // --- 1. CREA UN NUOVO TEAM ---
     // url completo: POST http://localhost:8080/api/teams/create
     @PostMapping("/create")
     public ResponseEntity<?> createTeam(@RequestBody CreateTeamRequest request) {
@@ -34,7 +33,6 @@ public class TeamController {
         }
     }
 
-    // --- 2. INVITA UN MEMBRO ---
     // url completo: POST http://localhost:8080/api/teams/invite
     @PostMapping("/invite")
     public ResponseEntity<?> inviteMember(@RequestBody InviteMemberRequest request) {
@@ -48,7 +46,6 @@ public class TeamController {
         }
     }
 
-    // --- 3. RISPONDI ALL'INVITO (ACCETTA/RIFIUTA) ---
     // url completo: POST http://localhost:8080/api/teams/respond-invite
     @PostMapping("/respond-invite")
     public ResponseEntity<?> respondToInvite(@RequestBody InviteMemberResponse request) {

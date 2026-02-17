@@ -24,7 +24,6 @@ public class ViolationService {
         StaffAssignment mentor = staffAssignmentRepository.findByHackathonIdAndUserId(hackathonId, mentorId)
                 .orElseThrow(() -> new RuntimeException("Errore: Non fai parte dello staff di questo evento!"));
 
-        // Il testo dice: "Il Mentore... può segnalare".
         if (mentor.getRole() != Role.MENTOR) {
             throw new RuntimeException("Solo i Mentori possono segnalare le violazioni!");
         }

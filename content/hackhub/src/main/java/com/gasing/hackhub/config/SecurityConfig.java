@@ -22,24 +22,39 @@ public class SecurityConfig {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // Lasciamo passare liberamente chi fa login o si registra
-                .requestMatchers("/api/auth/**").permitAll()
-                // Tutti gli altri percorsi sono bloccati se non hai il Token JWT
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            // Colleghiamo il motore di autenticazione creato in ApplicationConfig
-            .authenticationProvider(authenticationProvider)
-            // Aggiungiamo il nostro "Controllore di Biglietti" JWT
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//            .csrf(csrf -> csrf.disable())
+//            .authorizeHttpRequests(auth -> auth
+//                // Lasciamo passare liberamente chi fa login o si registra
+//                .requestMatchers("/api/auth/**").permitAll()
+//                // Tutti gli altri percorsi sono bloccati se non hai il Token JWT
+//                .anyRequest().authenticated()
+//            )
+//            .sessionManagement(session -> session
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            )
+//            // Colleghiamo il motore di autenticazione creato in ApplicationConfig
+//            .authenticationProvider(authenticationProvider)
+//            // Aggiungiamo il nostro "Controllore di Biglietti" JWT
+//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            // 1. Disabilita CSRF (altrimenti i POST falliscono sempre nei test via Postman/HTTP Client)
+            .csrf(csrf -> csrf.disable())
+
+            // 2. Permetti l'accesso a TUTTI gli endpoint senza login
+            .authorizeHttpRequests(auth -> auth
+                    .anyRequest().permitAll()
+            );
+
+    return http.build();
+}
 }
