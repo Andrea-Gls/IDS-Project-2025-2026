@@ -21,6 +21,9 @@ public class Team {
     private Long id;
 
     @Column(nullable = false)
+    private boolean isDisqualified = false;
+
+    @Column(nullable = false)
     private String nome;
 
     @OneToMany(mappedBy = "team") // cerca la variabile 'team' dentro la classe User.
