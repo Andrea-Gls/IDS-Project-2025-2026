@@ -16,7 +16,6 @@ public class ViolationController {
     @Autowired
     private ViolationService violationService;
 
-    // --- IL MENTORE INVIA UNA SEGNALAZIONE ---
     @PostMapping("/report")
     public ResponseEntity<?> reportViolation(@RequestBody ReportViolationRequest request) {
         try {
@@ -50,14 +49,11 @@ public class ViolationController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<?> getPendingReports(
-            @RequestParam Long hackathonId,
-            @RequestParam Long organizerId
-    ) {
+    public ResponseEntity<?> getPendingReports(@RequestParam Long hackathonId, @RequestParam Long organizerId) {
         try {
             return ResponseEntity.ok(violationService.getPendingReports(hackathonId, organizerId));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(403).body(e.getMessage()); // 403 Forbidden è più corretto
+            return ResponseEntity.status(403).body(e.getMessage());
         }
     }
 }

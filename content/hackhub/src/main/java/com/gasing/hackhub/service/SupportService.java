@@ -1,6 +1,6 @@
 package com.gasing.hackhub.service;
 
-import com.gasing.hackhub.adapter.CalendarAdapter;
+import com.gasing.hackhub.adapter.CalendarGateway;
 import com.gasing.hackhub.dto.staff.CreateSupportRequest;
 import com.gasing.hackhub.enums.HackathonStatus;
 import com.gasing.hackhub.enums.RequestStatus;
@@ -16,16 +16,20 @@ import java.util.List;
 @Service
 public class SupportService {
 
-    @Autowired private SupportRepository supportRepository;
-
-    @Autowired private TeamRepository teamRepository;
-
-    @Autowired private StaffAssignmentRepository staffAssignmentRepository;
-
-    @Autowired private RegistrationRepository registrationRepository;
+    @Autowired
+    private SupportRepository supportRepository;
 
     @Autowired
-    private CalendarAdapter calendarAdapter;
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private StaffAssignmentRepository staffAssignmentRepository;
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    @Autowired
+    private CalendarGateway calendarAdapter;
 
     @Transactional
     public SupportRequest createRequest(CreateSupportRequest dto) {
@@ -89,7 +93,6 @@ public class SupportService {
             throw new RuntimeException("Non sei un Mentore per l'hackathon a cui partecipa questo team!");
         }
 
-        // USO DEL PATTERN ADAPTER (Nuova parte)
         // Chiediamo al sistema esterno di generare il link per l'orario scelto
         String nomeMentore = validMentorAssignment.getUser().getNome();
         String nomeTeam = req.getTeam().getNome();
@@ -97,7 +100,7 @@ public class SupportService {
         String linkGenerato = calendarAdapter.prenotaCall(nomeMentore, nomeTeam, dataOra);
 
 
-        // 4. Aggiorno la richiesta nel DB
+        // Aggiorno la richiesta nel DB
         req.setMentor(validMentorAssignment);
         req.setCallLink(linkGenerato); // Salvo il link restituito dall'adapter
         req.setStatus(RequestStatus.RESOLVED);
@@ -105,18 +108,13 @@ public class SupportService {
         return supportRepository.save(req);
     }
 
-    // Per il Team: "Fammi vedere le mie richieste"
+    // Metodo per mostrare le richieste al team
     public List<SupportRequest> getRequestsByTeam(Long teamId) {
         return supportRepository.findByTeamId(teamId);
     }
 
-    // Per il Mentore: "Fammi vedere quelle che ho risolto io"
+    // Metodo per mostrarle al mentore
     public List<SupportRequest> getRequestsByMentor(Long userId) {
         return supportRepository.findByMentor_User_Id(userId);
-    }
-
-    // Per la Dashboard (Tutte le aperte)
-    public List<SupportRequest> getAllOpen() {
-        return supportRepository.findByStatus(RequestStatus.OPEN);
     }
 }

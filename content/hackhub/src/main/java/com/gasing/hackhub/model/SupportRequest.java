@@ -27,9 +27,9 @@ public class SupportRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RequestStatus status = RequestStatus.OPEN; // Default: APERTA
+    private RequestStatus status = RequestStatus.OPEN;
 
-    // --- RELAZIONI ---
+    // Relazioni
 
     @ManyToOne(optional = false) // Una richiesta deve per forza appartenere a un team
     @JoinColumn(name = "team_id", nullable = false)

@@ -6,6 +6,6 @@ import lombok.Data;
 public class ReportViolationRequest {
     private Long reporterId;    // ID dell'Utente (Mentore) che fa la segnalazione
     private Long hackathonId;   // ID dell'evento (per verificare che sia staff lì)
-    private Long teamId;        // ID del Team cattivo
-    private String motivo;      // "Hanno copiato!"
+    private Long teamId;        // ID del Team segnalato
+    private String motivo;
 }

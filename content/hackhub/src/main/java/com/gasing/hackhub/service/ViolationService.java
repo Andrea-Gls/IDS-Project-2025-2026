@@ -16,14 +16,15 @@ public class ViolationService {
     @Autowired private TeamRepository teamRepository;
     @Autowired private StaffAssignmentRepository staffAssignmentRepository;
 
-    // --- IL MENTORE SEGNALA UNA VIOLAZIONE ---
+    // Mentore che segnala
     @Transactional
     public ViolationReport segnalaTeam(Long mentorId, Long hackathonId, Long teamId, String motivo) {
 
-        // Verifiche di sicurezza: Chi sta segnalando?
+        // Verifico che è staff
         StaffAssignment mentor = staffAssignmentRepository.findByHackathonIdAndUserId(hackathonId, mentorId)
                 .orElseThrow(() -> new RuntimeException("Errore: Non fai parte dello staff di questo evento!"));
 
+        // Verifico il ruolo
         if (mentor.getRole() != Role.MENTOR) {
             throw new RuntimeException("Solo i Mentori possono segnalare le violazioni!");
         }
@@ -42,7 +43,7 @@ public class ViolationService {
         return violationRepository.save(report);
     }
 
-    // --- L'ORGANIZZATORE DECIDE (Squalifica o Perdona) ---
+    // Per l'oganizzatore a cui arriva la segnalazione
     @Transactional
     public void gestisciSegnalazione(Long organizerId, Long violationId, boolean confermaSqualifica) {
 
@@ -50,8 +51,8 @@ public class ViolationService {
         ViolationReport report = violationRepository.findById(violationId)
                 .orElseThrow(() -> new RuntimeException("Segnalazione non trovata"));
 
-        // Controllo che l'utente sia l'ORGANIZZATORE di *quell'* Hackathon
-        // (Risalgo all'evento tramite il reporter della segnalazione)
+        // Controllo che l'utente sia l'organizzatore di quel hackathon
+        // Risalgo all'evento tramite il reporter della segnalazione
         Long hackathonId = report.getReporter().getHackathon().getId();
 
         StaffAssignment organizer = staffAssignmentRepository.findByHackathonIdAndUserId(hackathonId, organizerId)
@@ -66,21 +67,20 @@ public class ViolationService {
             throw new RuntimeException("Questa segnalazione è già stata chiusa!");
         }
 
-        // APPLICO LA DECISIONE
         if (confermaSqualifica) {
-            // Caso 1: PUGNO DURO -> Squalifica
+            // Primo caso : Squalifica
             Team team = report.getReportedTeam();
             team.setDisqualified(true); // Imposto il flag sul Team
             teamRepository.save(team);
         }
-        // FALSO ALLARME -> Non faccio nulla sul team, chiudo solo il report.
+        // Secondo caso : Non faccio nulla sul team, chiudo solo il report.
 
         // Chiudo la segnalazione
         report.setGestita(true);
         violationRepository.save(report);
     }
 
-    // --- DASHBOARD (Cose da fare) ---
+    // Per la dashboard dell'organizzatore
     public List<ViolationReport> getPendingReports(Long hackathonId, Long organizerId) {
 
         // Devo sempre controllare che chi fa la richiesta sia l'Organizzatore legittimo

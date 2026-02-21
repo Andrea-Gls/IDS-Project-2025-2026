@@ -20,23 +20,22 @@ public class ViolationReport {
     @Column(nullable = false, length = 1000)
     private String motivo; // Descrizione della violazione
 
-    // Stato semplice: false = Aperta (da vedere), true = Chiusa (gestita dall'organizzatore)
+    // False = Aperta (da vedere), true = Chiusa (gestita dall'organizzatore)
     @Column(nullable = false)
     private boolean gestita = false;
 
     // Data della segnalazione (utile per l'ordine cronologico)
     private LocalDateTime dataSegnalazione = LocalDateTime.now();
 
-    // --- RELAZIONI ---
+    // Relazioni
 
-    // Chi ha fatto la segnalazione? (Il Mentore)
     @ManyToOne(optional = false)
     @JoinColumn(name = "reporter_id", nullable = false)
     @ToString.Exclude
     @JsonIgnore // Evitiamo loop JSON
     private StaffAssignment reporter;
 
-    // Chi è stato segnalato? (Il Team)
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "reported_team_id", nullable = false)
     @ToString.Exclude
