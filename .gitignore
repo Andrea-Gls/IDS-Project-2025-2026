@@ -1,3 +1,6 @@
 #
 *.vpp.lck
 *.vpp~*
+
+### VS Code ###
+.vscode/
