@@ -8,18 +8,19 @@ import com.gasing.hackhub.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-// rest controller dice a spring che questa classe risponde alle chiamate web
-// request mapping definisce l'indirizzo base per tutte le chiamate qui dentro
+// Rest controller dice a spring che questa classe risponde alle chiamate web
+// Request mapping definisce l'indirizzo base per tutte le chiamate qui dentro
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
 
-    // collego il service
+    // Collego il service che è quello che fa i controlli
     @Autowired
     private TeamService teamService;
 
-    // url completo: POST http://localhost:8080/api/teams/create
+    // Crea team
     @PostMapping("/create")
     public ResponseEntity<?> createTeam(@RequestBody CreateTeamRequest request) {
         try {
@@ -33,7 +34,6 @@ public class TeamController {
         }
     }
 
-    // url completo: POST http://localhost:8080/api/teams/invite
     @PostMapping("/invite")
     public ResponseEntity<?> inviteMember(@RequestBody InviteMemberRequest request) {
         try {
@@ -46,7 +46,6 @@ public class TeamController {
         }
     }
 
-    // url completo: POST http://localhost:8080/api/teams/respond-invite
     @PostMapping("/respond-invite")
     public ResponseEntity<?> respondToInvite(@RequestBody InviteMemberResponse request) {
         try {
@@ -59,4 +58,25 @@ public class TeamController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/{teamId}")
+    public ResponseEntity<?> getTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(teamService.getTeamById(teamId));
+    }
+
+    @GetMapping("/{teamId}/members")
+    public ResponseEntity<?> getMembers(@PathVariable Long teamId) {
+        try {
+            List<MemberDTO> members = teamService.getTeamMembers(teamId)
+                    .stream()
+                    .map(u -> new MemberDTO(u.getId(), u.getNome(), u.getCognome(), u.getEmail()))
+                    .toList();
+
+            return ResponseEntity.ok(members);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+public record MemberDTO(Long id, String nome, String cognome, String email) {}
 }

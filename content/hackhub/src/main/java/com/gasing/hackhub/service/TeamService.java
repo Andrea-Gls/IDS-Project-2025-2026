@@ -12,8 +12,8 @@ import com.gasing.hackhub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-import java.util.Optional;
 
 // service dice a spring che qui dentro c'è la logica del programma
 // in pratica è il cervello che fa i calcoli prima di salvare nel db
@@ -82,7 +82,7 @@ public class TeamService {
         }
 
         // qui controllo se per caso non l'abbiamo già invitato ed è ancora in attesa
-        // uso stream che è un modo veloce per filtrare la lista degli inviti senza fare cicli for
+        // uso stream per filtrare la lista degli inviti senza fare cicli for
         boolean invitoGiaEsistente = team.getInviti().stream()
                 .anyMatch(invito -> invito.getReceiver().getId().equals(destinatario.getId())
                         && invito.getStatus() == InviteStatus.PENDING);
@@ -104,8 +104,6 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-    // --- 3. RISPONDERE ALL'INVITO ---
-
     @Transactional
     public void rispondiInvito(InviteMemberResponse request) {
 
@@ -125,10 +123,11 @@ public class TeamService {
                 .orElseThrow(() -> new RuntimeException("Nessun invito in attesa trovato per te!"));
 
         if (request.isAccetta()) {
+            if (user.getTeam() != null) {
+                throw new RuntimeException("Fai già parte di un team! Devi uscire prima di accettare un nuovo invito.");
+            }
             // se ha detto si cambio lo stato in accepted
             invito.setStatus(InviteStatus.ACCEPTED);
-
-            // e aggiorno l'utente mettendogli il team
             user.setTeam(team);
             userRepository.save(user);
         } else {
@@ -139,4 +138,19 @@ public class TeamService {
         // alla fine salvo il team così si aggiorna lo stato dell'invito
         teamRepository.save(team);
     }
+
+    public Team getTeamById(Long teamId) {
+    return teamRepository.findById(teamId)
+            .orElseThrow(() -> new RuntimeException("Team non trovato"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getTeamMembers(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new RuntimeException("Team non trovato"));
+
+    // carica i membri (OneToMany). In transazione non dà problemi di lazy loading
+    return team.getMembers();
+    }
+    
 }

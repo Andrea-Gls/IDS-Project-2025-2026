@@ -21,10 +21,10 @@ public class Team {
     private Long id;
 
     @Column(nullable = false)
-    private boolean isDisqualified = false;
+    private String nome;
 
     @Column(nullable = false)
-    private String nome;
+    private boolean isDisqualified = false;
 
     @OneToMany(mappedBy = "team") // cerca la variabile 'team' dentro la classe User.
     @ToString.Exclude  // serve per non far dare errore nei log o debugger
