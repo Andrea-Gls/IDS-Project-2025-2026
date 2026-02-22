@@ -64,6 +64,10 @@ public class SupportService {
         SupportRequest req = supportRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Richiesta non trovata"));
 
+        if (req.getStatus() == RequestStatus.RESOLVED) {
+            throw new RuntimeException("Questa richiesta di supporto è già stata risolta!");
+        }
+
         // DEVO COLLEGARE IL MENTORE ALLA RICHIESTA
         // Cerchiamo direttamente lo StaffAssignment di questo utente.
         // Siccome un utente può essere mentore in 10 eventi, dobbiamo trovare quello giusto.
@@ -116,5 +120,32 @@ public class SupportService {
     // Metodo per mostrarle al mentore
     public List<SupportRequest> getRequestsByMentor(Long userId) {
         return supportRepository.findByMentor_User_Id(userId);
+    }
+
+    // Bacheca: Visualizza le richieste APERTE per i mentori
+    public List<SupportRequest> getOpenRequestsForMentor(Long mentorUserId) {
+
+        // ecupero gli Hackathon in cui questo utente è MENTORE
+        List<Hackathon> mentorHackathons = staffAssignmentRepository.findByUserId(mentorUserId).stream()
+                .filter(assignment -> assignment.getRole() == Role.MENTOR)
+                .map(StaffAssignment::getHackathon)
+                .toList();
+
+        if (mentorHackathons.isEmpty()) {
+            return List.of(); // Non è mentore da nessuna parte, bacheca vuota
+        }
+
+        // Recupero dal DB TUTTE le richieste con stato OPEN
+        List<SupportRequest> openRequests = supportRepository.findByStatus(RequestStatus.OPEN);
+
+        // Filtro le richieste: tengo solo quelle fatte da Team iscritti agli Hackathon del mentore
+        return openRequests.stream()
+                .filter(req -> {
+                    // Verifico se il team della richiesta è iscritto a uno dei "suoi" hackathon
+                    return registrationRepository.findAll().stream()
+                            .anyMatch(reg -> reg.getTeam().getId().equals(req.getTeam().getId()) &&
+                                    mentorHackathons.contains(reg.getHackathon()));
+                })
+                .toList();
     }
 }

@@ -16,6 +16,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
     List<Submission> findByRegistration_Hackathon_Id(Long hackathonId);
 
+
     // Eredita dalla JpaRepo il metodo save
 
 }

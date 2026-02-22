@@ -16,4 +16,6 @@ public interface SupportRepository extends JpaRepository<SupportRequest, Long> {
 
     // Entra dentro l'oggetto mentor, poi dentro user e cerca l'id.
     List<SupportRequest> findByMentor_User_Id(Long userId);
+
+    List<SupportRequest> findByStatus(RequestStatus status);
 }

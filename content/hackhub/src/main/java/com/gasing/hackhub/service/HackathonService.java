@@ -168,7 +168,7 @@ public class HackathonService {
         }
 
         // Save
-        com.gasing.hackhub.model.HackathonRegistration registration = new com.gasing.hackhub.model.HackathonRegistration();
+        HackathonRegistration registration = new HackathonRegistration();
         registration.setHackathon(hackathon);
         registration.setTeam(team);
         registration.setDataRegistrazione(java.time.LocalDate.now()); // Usa LocalDate come nel tuo model
@@ -245,6 +245,9 @@ public class HackathonService {
         if (hackathon.getStato() != HackathonStatus.CONCLUDED) {
             throw new RuntimeException("L'evento non è ancora concluso! Devi prima proclamare il vincitore.");
         }
+        if (hackathon.isPremioErogato()) {
+            throw new RuntimeException("Attenzione: Il premio per questo hackathon è già stato erogato!");
+        }
 
         // Recupero il Vincitore
         HackathonRegistration winner = hackathon.getRegistrations().stream()
@@ -260,6 +263,8 @@ public class HackathonService {
         boolean esito = paymentAdapter.processPayment(nomeTeam, premio, ibanFake);
 
         if (esito) {
+            hackathon.setPremioErogato(true); // salvo che il pagamento è già stato fatto
+            hackathonRepository.save(hackathon);
             return "Pagamento di €" + premio + " al team '" + nomeTeam + "' avviato con successo!";
         } else {
             throw new RuntimeException("Errore del sistema esterno: Pagamento rifiutato.");

@@ -48,10 +48,20 @@ public class SupportController {
         List<SupportRequest> requests = supportService.getRequestsByTeam(teamId);
         return ResponseEntity.ok(requests);
     }
-
+        // vede le richieste sue già concluse
     @GetMapping("/mentor/{userId}")
     public ResponseEntity<?> getMentorRequests(@PathVariable Long userId) {
         List<SupportRequest> requests = supportService.getRequestsByMentor(userId);
         return ResponseEntity.ok(requests);
+    }
+        // vede le richieste aperte
+    @GetMapping("/mentor/{userId}/open")
+    public ResponseEntity<?> getOpenRequests(@PathVariable Long userId) {
+        try {
+            List<SupportRequest> requests = supportService.getOpenRequestsForMentor(userId);
+            return ResponseEntity.ok(requests);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

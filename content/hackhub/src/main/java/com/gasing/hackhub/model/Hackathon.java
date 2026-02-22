@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,9 @@ public class Hackathon {
     private String luogo;
 
     private Double premio;
+
+    @Column(nullable = false)
+    private boolean premioErogato = false;
 
     @Column(nullable = false)
     private int dimensioneMassimaTeam;

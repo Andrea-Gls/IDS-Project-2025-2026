@@ -8,13 +8,19 @@ import com.gasing.hackhub.model.User;
 import com.gasing.hackhub.repository.UserRepository;
 import com.gasing.hackhub.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class AuthService {
 
+
     @Autowired private UserRepository userRepository;
+
     @Autowired private JwtService jwtService;
+
+    @Autowired private PasswordEncoder passwordEncoder;
 
     public UserResponse register(RegisterRequest request) {
 
@@ -27,8 +33,8 @@ public class AuthService {
         newUser.setCognome(request.getCognome());
         newUser.setEmail(request.getEmail());
 
-        // Minimo per ora: password in chiaro (poi BCrypt)
-        newUser.setPasswordHash(request.getPassword());
+        // password criptata con bcrypt prima di salvarls
+        newUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
         User savedUser = userRepository.save(newUser);
         return mapToUserResponse(savedUser);
@@ -39,7 +45,8 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Login fallito: Credenziali errate"));
 
-        if (!request.getPassword().equals(user.getPasswordHash())) {
+        // Hasho la password appena inserita e la confronto con l'hash nel DB.
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new RuntimeException("Login fallito: Credenziali errate");
         }
 
@@ -59,4 +66,5 @@ public class AuthService {
         response.setEmail(user.getEmail());
         return response;
     }
+
 }
